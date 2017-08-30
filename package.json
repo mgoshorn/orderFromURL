@@ -1,0 +1,11 @@
+{
+  "name": "orderprocessing",
+  "version": "1.0.0",
+  "description": "project is HQ assignment",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Mitchell Goshorn",
+  "license": "ISC"
+}
