@@ -6,13 +6,14 @@ Database = function() {
 
     /**
      * Create MYSQL connection
+     * ***Sample data included
      * ***Replace with own server connection data
      */
     this.connect = function() {
         this.con = mysql.createConnection({
             host: '127.0.0.1',
             user: 'testing_tester',
-            password: 'qkrwltndPQj',
+            password: 'testing_password',
             database: 'testing'
         });
     }
@@ -95,25 +96,35 @@ Database = function() {
         let query = 'INSERT INTO `order` (order_code, client_name, product_code, quantity) VALUES (?, ?, ?, ?);'
 
         var productPromise;
-        var orderPromise;
 
-        //Check if product_code is in the product table, if not add it in callback
-        productPromise = Promise((resolve, reject) => {
-            this.checkProduct(item.product_code, function(err, res) {
-                if(err) reject();
-                else resolve();
-            })
+        //Create promise for completion of product check
+        productPromise = new Promise((resolve, reject) => {
+            this.checkProduct(item.product_code, resolve, reject);
         })
         
         //Insert order into database
         this.con.query(query, [item.order_code, item.client_name, item.product_code, item.quantity],
         function(error, results, field) {
              if(error) callback(error, null);
-             callback(null, results);      
+
+             //Don't call callback until product promise has been resolved
+             Promise.all([productPromise]).then(values=> {
+                callback(null, results);
+             });
+                   
         });
     }
 
-    this.checkProduct = function(product_code, callback) {
+
+    /**
+     * Abstracts handling of product_code check.
+     * Method will resolve or reject the passed promise upon completion
+     * 
+     * @param product_code to be checked
+     * @param resolve upon success
+     * @param reject upon failure
+     */
+    this.checkProduct = function(product_code, resolve, reject) {
         if(this.isProductInDatabase(product_code, function(err, inDatabase) {
             //(() => this);
             if(err) throw err;
@@ -121,9 +132,11 @@ Database = function() {
             //Add product_code to product table if it doesn't exist already
             if(!inDatabase) {
                 this.addProductToDatabase(product_code, function(err, result) {
-                    if(err) callback(err, null);
-                    callback(null, true);
+                    if(err) reject();
+                    resolve(1);
                 });
+            } else {
+                resolve(1);
             }
         }.bind(this)));
     }
