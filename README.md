@@ -22,11 +22,24 @@ memory usage low while parsing large documents.
 <li>No data inserted</li>
 <li>Data partially inserted</li>
 </ol>
-As data being partially inserted adds the complexity of the document content being in an unknown or complicated state, I considered
-any situation which would result in data being partially placed a worst case scenario. 
-As such, the insertion of data is managed by a transaction. If a stream error occurs or malformed data is encountered
+<p>As data being partially inserted adds the complexity of the document content being in an unknown or complicated state, I considered
+any situation which would result in data being partially placed a worst case scenario.</p>
+
+<p>As such, the insertion of data is managed by a transaction. If a stream error occurs or malformed data is encountered
 the database is rolled back and the process is terminated. This should remove the possiblity of result case 3, leaving only
-case 1 and 2 as possible results.
+case 1 and 2 as possible results.</p>
+
+<h4>The following Scenarios will result in a rollback<h4>
+<ul>
+<li>Any stream error</li>
+<li>Any database read/write error</li>
+<li>The product quantity being NaN</li>
+<li>Any other order values being empty strings</li>
+</ul>
+
+<em>Note: Zero or negative quantities will not cause errors, but will result in the order not being inserted.</em>
+
+
 
 <h2>Usage</h2>
 <p>Clone project, navigate cmd directory to folder. From this folder you can execute the task by calling node, the getOrdersFromUrl.js, then the URL source, like so:</p>
