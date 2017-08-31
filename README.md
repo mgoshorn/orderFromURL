@@ -29,7 +29,7 @@ any situation which would result in data being partially placed a worst case sce
 the database is rolled back and the process is terminated. This should remove the possiblity of result case 3, leaving only
 case 1 and 2 as possible results.</p>
 
-<h4>The following Scenarios will result in a rollback<h4>
+<h4>The following Scenarios will result in a rollback</h4>
 <ul>
 <li>Any stream error</li>
 <li>Any database read/write error</li>
