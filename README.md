@@ -48,5 +48,8 @@ case 1 and 2 as possible results.</p>
 
 <p>Note: An internet connection is needed for this task to work.</p>
 
-<h2>Notes</h2>
+<h3>Testing</h3>
+Unit tests can be run from the project directory using the command 'npm test'.
+
+<h3>Notes</h3>
 <p>This program was a little more complicated than I had thought at first. My initial thought was that this would be a pretty simple task in PHP, so why not learn to do it in Node. However, managing the asynchornouos nature of JavaScript with a stream was more challenging than I had expected! It could have been made a bit easier by using async/await functionality along with a promisified mysql library to simplify asynchronous controls, but I opted to keep it to more generic JavaScript as an exercise.</p>
