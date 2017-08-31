@@ -94,25 +94,38 @@ Database = function() {
         
         let query = 'INSERT INTO `order` (order_code, client_name, product_code, quantity) VALUES (?, ?, ?, ?);'
 
+        var productPromise;
+        var orderPromise;
+
         //Check if product_code is in the product table, if not add it in callback
-        if(!this.isProductInDatabase(item.product_code, function(err, inDatabase) {
-            (() => this);
-            if(err) throw err;
-
-            //Add product_code to product table if it doesn't exist already
-            if(!inDatabase) {
-                this.addProductToDatabase(item.product_code, function(err, result) {
-                    if(err) throw err;
-                });
-            }
-        }.bind(this)));
-
+        productPromise = Promise((resolve, reject) => {
+            this.checkProduct(item.product_code, function(err, res) {
+                if(err) reject();
+                else resolve();
+            })
+        })
+        
         //Insert order into database
         this.con.query(query, [item.order_code, item.client_name, item.product_code, item.quantity],
         function(error, results, field) {
              if(error) callback(error, null);
              callback(null, results);      
         });
+    }
+
+    this.checkProduct = function(product_code, callback) {
+        if(this.isProductInDatabase(product_code, function(err, inDatabase) {
+            //(() => this);
+            if(err) throw err;
+
+            //Add product_code to product table if it doesn't exist already
+            if(!inDatabase) {
+                this.addProductToDatabase(product_code, function(err, result) {
+                    if(err) callback(err, null);
+                    callback(null, true);
+                });
+            }
+        }.bind(this)));
     }
 
     /**
