@@ -34,3 +34,6 @@ case 1 and 2 as possible results.
 <p>node getOrdersFromUrl.js http://www.resources-api.tech/test3.html</p>
 
 <p>Note: An internet connection is needed for this task to work.</p>
+
+<h2>Notes</h2>
+<p>This program was a little more complicated than I had thought at first. My initial thought was that this would be a pretty simple task in PHP, so why not learn to do it in Node. However, managing the asynchornouos nature of JavaScript with a stream was more challenging than I had expected! It could have been made a bit easier by using async/await functionality along with a promisified mysql library to simplify asynchronous controls, but I opted to keep it to more generic JavaScript as an exercise.</p>
