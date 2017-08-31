@@ -129,15 +129,19 @@ Parse = function() {
             if(order.quantity > 1) {
                 this.ordersAdded++;
 
-                //Insert order into database
+                //Create promise for insertion
                 let insertionPromise = new Promise((resolve, reject) => {
+                    //Insert order into database
                     db.insert(order, function(err, result) {
                         if(err) {
                             throw err;
                             reject();
                         }
-                        this.outstanding.delete(insertionPromise);
+                        //resolve promise
                         resolve(0);
+                        
+                        //remove promise from outstanding set to prevent bloat
+                        this.outstanding.delete(insertionPromise);
                     }.bind(this))
                 });
                 this.outstanding.add(insertionPromise);
