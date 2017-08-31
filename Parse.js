@@ -11,6 +11,7 @@ Parse = function() {
     this.lineCount = 0;
     this.ordersAdded = 0;
     this.outstanding = new Set();
+
     /**
      * Primary stream/processing loop.
      * 
@@ -38,7 +39,7 @@ Parse = function() {
             
             //Pause stream while processing data
             stream.pause();
-
+            console.log(line);
             //Increment counter
             this.lineCount++;
 
@@ -62,9 +63,10 @@ Parse = function() {
         //On stream end
         .on('end', function() {
             //Handle end of stream
+            db.commit();
             this.streamComplete = true;
             Promise.all(this.outstanding).then( values => {
-                db.commit();
+                
                 console.log();
                 console.log('Complete!');
                 process.exit();
@@ -126,18 +128,22 @@ Parse = function() {
             var order = this.parseLine(line);
 
             //Do not insert orders whose quantities are 0 or less
-            if(order.quantity > 1) {
+            if(order.quantity > 0) {
                 this.ordersAdded++;
 
-                //Insert order into database
+                //Create promise for insertion
                 let insertionPromise = new Promise((resolve, reject) => {
+                    //Insert order into database
                     db.insert(order, function(err, result) {
                         if(err) {
-                            throw err;
                             reject();
+                            throw err;
                         }
-                        this.outstanding.delete(insertionPromise);
+                        //resolve promise
                         resolve(0);
+
+                        //remove promise from outstanding set to prevent bloat
+                        this.outstanding.delete(insertionPromise);
                     }.bind(this))
                 });
                 this.outstanding.add(insertionPromise);
