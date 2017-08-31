@@ -39,7 +39,7 @@ Parse = function() {
             
             //Pause stream while processing data
             stream.pause();
-            console.log(line);
+
             //Increment counter
             this.lineCount++;
 
