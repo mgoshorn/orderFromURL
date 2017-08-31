@@ -10,7 +10,7 @@ Parse = function() {
     //Output trackers
     this.lineCount = 0;
     this.ordersAdded = 0;
-
+    this.outstanding = new Set();
     /**
      * Primary stream/processing loop.
      * 
@@ -41,7 +41,7 @@ Parse = function() {
 
             //Increment counter
             this.lineCount++;
-            
+
             //Process the line and pass data to the database
             this.processStreamLine(line, db);
             
@@ -63,9 +63,12 @@ Parse = function() {
         .on('end', function() {
             //Handle end of stream
             this.streamComplete = true;
-            db.commit();
-            console.log();
-            console.log('Stream ended and closed. ' + this.ordersAdded + ' entries added to database.')
+            Promise.all(this.outstanding).then( values => {
+                db.commit();
+                console.log();
+                console.log('Complete!');
+                process.exit();
+            })
         }.bind(this)));
     }
 
@@ -127,9 +130,17 @@ Parse = function() {
                 this.ordersAdded++;
 
                 //Insert order into database
-                db.insert(order, function(err, result) {
-                    if(err) throw err;
-                })
+                let insertionPromise = new Promise((resolve, reject) => {
+                    db.insert(order, function(err, result) {
+                        if(err) {
+                            throw err;
+                            reject();
+                        }
+                        this.outstanding.delete(insertionPromise);
+                        resolve(0);
+                    }.bind(this))
+                });
+                this.outstanding.add(insertionPromise);
             }
 
         } catch(err) {
