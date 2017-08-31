@@ -1,7 +1,7 @@
 <h1>orderFromURL</h1>
 <h2>Description</h2>
 <p>This application will parse a URL location and insert data into a MySQL database following the matching pattern:
-<ol><li><em>order_code,client_name,product_code,quantity</em></li></ol>
+<ul><li><em>order_code,client_name,product_code,quantity</em></li></ul>
 </p>
 
 <h2>Configuration</h2>
@@ -29,3 +29,8 @@ the database is rolled back and the process is terminated. This should remove th
 case 1 and 2 as possible results.
 
 <h2>Usage</h2>
+<p>Clone project, navigate cmd directory to folder. From this folder you can execute the task by calling node, the getOrdersFromUrl.js, then the URL source, like so:</p>
+
+<p>node getOrdersFromUrl.js http://www.resources-api.tech/test3.html</p>
+
+<p>Note: An internet connection is needed for this task to work.</p>
